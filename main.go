@@ -125,7 +125,7 @@ func GetIncompleteTasks(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetTodoTasks(completed bool) interface{} {
-	todos := &TodoModel{}
-	q := `SELECT * FROM todo_list WHERE completed = $1 RETURNING id, description, completed`
-	err := dbpool.QueryRow(context.Background(), q, completed).Scan(todos.Id, todos.)
+	//todos := &TodoModel{}
+	//q := `SELECT * FROM todo_list WHERE completed = $1 RETURNING id, description, completed`
+	//err := dbpool.QueryRow(context.Background(), q, completed).Scan(todos.Id, todos.)
 }
