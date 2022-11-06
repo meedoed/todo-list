@@ -46,9 +46,11 @@ func main() {
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "hello from todolist API")
 	})
-
 	router.HandleFunc("/todo", CreateTask).Methods("POST")
-
+	router.HandleFunc("/todo-completed", GetCompletedTasks).Methods("GET")
+	router.HandleFunc("/todo-incomplete", GetIncompleteTasks).Methods("GET")
+	router.HandleFunc("/todo/{id}", UpdateTask).Methods("POST")
+	router.HandleFunc("/todo/{id}", DeleteTask).Methods("DELETE")
 	log.Fatal(http.ListenAndServe("localhost:8000", router))
 }
 
@@ -125,7 +127,19 @@ func GetIncompleteTasks(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetTodoTasks(completed bool) interface{} {
-	//todos := &TodoModel{}
-	//q := `SELECT * FROM todo_list WHERE completed = $1 RETURNING id, description, completed`
-	//err := dbpool.QueryRow(context.Background(), q, completed).Scan(todos.Id, todos.)
+	var todos []TodoModel
+	rows, err := dbpool.Query(context.Background(), `SELECT * FROM todo_list WHERE completed = $1;`, completed)
+	if err != nil {
+		logrus.Error(err)
+	}
+	for rows.Next() {
+		todo := TodoModel{}
+		if err = rows.Scan(&todo.Id, &todo.Description, todo.Completed); err != nil {
+			logrus.Warn(err)
+			continue
+		}
+		todos = append(todos, todo)
+	}
+
+	return todos
 }
